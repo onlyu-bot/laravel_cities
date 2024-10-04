@@ -27,6 +27,8 @@ class Download extends Command
             }
         }
 
+        $files[] = "alternateNamesV2.zip";
+
         return $files;
     }
 
