@@ -37,5 +37,9 @@ class truncTable extends Command
         $this->info('Relation checks disabled');
         DB::table('geo')->truncate();
         $this->info('Table "geo" is empty now.');
+        DB::table('geo_alternate_names')->truncate();
+        $this->info('Table "geo_alternate_names" is empty now.');
+        DB::table('geo_country_infos')->truncate();
+        $this->info('Table "geo_country_infos" is empty now.');
     }
 }
