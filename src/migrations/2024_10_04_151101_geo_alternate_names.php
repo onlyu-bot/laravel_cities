@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlternateName extends Migration
+class GeoAlternateName extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AlternateName extends Migration
      */
     public function up()
     {
-        Schema::create('alternate_names', function (Blueprint $table) {
+        Schema::create('geo_alternate_names', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('alternate_name_id'); //alternateNameId
             $table->unsignedInteger('geo_id'); //geonameid
@@ -35,6 +35,6 @@ class AlternateName extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('alternate_names');
+        Schema::dropIfExists('geo_alternate_names');
     }
 }

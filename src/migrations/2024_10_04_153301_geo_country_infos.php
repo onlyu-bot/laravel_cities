@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CountryInfo extends Migration
+class GeoCountryInfo extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CountryInfo extends Migration
      */
     public function up()
     {
-        Schema::create('country_infos', function (Blueprint $table) {
+        Schema::create('geo_country_infos', function (Blueprint $table) {
             $table->increments('id');
             $table->char('country', 2); //ISO
             $table->text('languages'); //Languages
@@ -28,6 +28,6 @@ class CountryInfo extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('country_infos');
+        Schema::dropIfExists('geo_country_infos');
     }
 }
