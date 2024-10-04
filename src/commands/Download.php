@@ -28,6 +28,7 @@ class Download extends Command
         }
 
         $files[] = "alternateNamesV2.zip";
+        $files[] = "countryInfo.txt";
 
         return $files;
     }
