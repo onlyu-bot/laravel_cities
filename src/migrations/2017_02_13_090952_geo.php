@@ -14,7 +14,7 @@ class Geo extends Migration
     public function up()
     {
         Schema::create('geo', function (Blueprint $table) {
-            $table->increments('id');
+            $table->increments('id'); //geonameid
             $table->integer('parent_id')->nullable();
             $table->integer('left')->nullable();
             $table->integer('right')->nullable();
