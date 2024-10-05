@@ -217,19 +217,19 @@ class seedGeoOtherFile extends Command
         [$stmt, $sql] = $this->getDBStatement($tableName);
 
         $count = 0;
-        $totalCount = count($this->geoItems->items);
 
         $progressBar = new ProgressBar($this->output, 100);
 
         $fileName = storage_path("geo/{$sourceName}.txt");
         $this->info("Reading File '$fileName'");
 
-
+        $totalCount = intval(exec("wc -l '{$fileName}'"));
         $handle = fopen($fileName, 'r');
 
         while (($line = fgets($handle)) !== false) {
             // ignore empty lines and comments
             if (! $line || $line === '' || strpos($line, '#') === 0) {
+                $totalCount--;
                 continue;
             }
 
