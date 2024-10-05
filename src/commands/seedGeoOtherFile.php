@@ -74,6 +74,32 @@ class seedGeoOtherFile extends Command
             'timezone',
         ];
 
+        $columns = [];
+        switch ($tableName) {
+            case 'geo_alternate_names':
+                $columns = [
+                    'alternate_name_id',
+                    'geo_id',
+                    'isolanguage',
+                    'alternate_name',
+                    'is_preferred_name',
+                    'is_short_name',
+                    'is_colloquial',
+                    'is_historic',
+                ];
+                break;
+            case 'geo_country_infos':
+                $columns = [
+                    'country',
+                    'currency_code',
+                    'languages',
+                    'geo_id',
+                ];
+                break;
+            default:
+                return;
+        }
+
         $modifiedColumns = [];
 
         foreach ($columns as $column) {
