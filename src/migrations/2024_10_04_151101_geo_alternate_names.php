@@ -17,8 +17,8 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('alternate_name_id'); //alternateNameId
             $table->unsignedInteger('geo_id'); //geonameid
-            $table->text('isolanguage'); //isolanguage
-            $table->char('alternate_name', 60); //alternate name
+            $table->char('isolanguage', 60); //isolanguage
+            $table->text('alternate_name'); //alternate name
             $table->char('is_preferred_name', 5);
             $table->char('is_short_name', 5);
             $table->char('is_colloquial', 5);
