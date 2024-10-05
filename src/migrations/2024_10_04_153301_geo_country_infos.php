@@ -16,6 +16,7 @@ class GeoCountryInfo extends Migration
         Schema::create('geo_country_infos', function (Blueprint $table) {
             $table->increments('id');
             $table->char('country', 2); //ISO
+            $table->text('currency_code'); //CurrencyCode
             $table->text('languages'); //Languages
             $table->unsignedInteger('geo_id'); //geonameid
         });

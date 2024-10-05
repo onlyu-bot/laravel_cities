@@ -19,12 +19,10 @@ class GeoAlternateName extends Migration
             $table->unsignedInteger('geo_id'); //geonameid
             $table->char('isolanguage', 60); //isolanguage
             $table->char('alternate_name', 60); //alternate name
-            $table->char('is_preferred_name', 60)->default('1');
-            $table->char('is_short_name', 60)->default('1');
-            $table->char('is_colloquial', 60)->default('1');
-            $table->char('is_historic', 60)->default('1'); 
-            $table->char('from', 10);
-            $table->char('to', 10);
+            $table->char('is_preferred_name', 5);
+            $table->char('is_short_name', 5);
+            $table->char('is_colloquial', 5);
+            $table->char('is_historic', 5); 
         });
     }
 
