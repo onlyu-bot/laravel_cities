@@ -156,7 +156,7 @@ class seedGeoOtherFile extends Command
             $this->info("Start seeding for $sourceName");
 
             // Clear Table
-            $this->info("Truncating '{$this->getFullyQualifiedTableName()}' table...");
+            $this->info("Truncating '{$this->getFullyQualifiedTableName($tableName)}' table...");
             DB::table($tableName)->truncate();
 
             // write to persistent storage
