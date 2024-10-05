@@ -223,6 +223,7 @@ class seedGeoOtherFile extends Command
         $fileName = storage_path("geo/{$sourceName}.txt");
         $this->info("Reading File '$fileName'");
 
+        $filesize = filesize($fileName);
         $totalCount = intval(exec("wc -l '{$fileName}'"));
         $handle = fopen($fileName, 'r');
 
