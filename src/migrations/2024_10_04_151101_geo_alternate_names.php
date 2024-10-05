@@ -35,4 +35,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('geo_alternate_names');
     }
-}
+};
