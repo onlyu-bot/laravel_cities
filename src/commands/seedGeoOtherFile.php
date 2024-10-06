@@ -210,7 +210,7 @@ class seedGeoOtherFile extends Command
         switch ($tableName) {
             case 'geo_alternate_names':
                 return <<<EOT
-        LOAD DATA INFILE ?
+        LOAD DATA INFILE '?'
     INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
 LINES TERMINATED BY '\\n';
@@ -218,7 +218,7 @@ EOT;
                 break;
             case 'geo_country_infos':
                 return <<<EOT
-        LOAD DATA INFILE ?
+        LOAD DATA INFILE '?'
     INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
 LINES TERMINATED BY '\\n'
