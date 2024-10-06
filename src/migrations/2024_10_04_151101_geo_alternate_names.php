@@ -23,6 +23,8 @@ return new class extends Migration
             $table->char('is_short_name', 5);
             $table->char('is_colloquial', 5);
             $table->char('is_historic', 5); 
+            $table->char('from', 5);
+            $table->char('to', 5);
         });
     }
 

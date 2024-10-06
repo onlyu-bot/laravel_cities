@@ -151,7 +151,7 @@ class seedGeoOtherFile extends Command
 
         foreach ($otherFiles as $tableName => $sourceName) {
 
-            $this->chunkSize = $this->option('chunk');
+            //$this->chunkSize = $this->option('chunk');
 
             $this->info("Start seeding for $sourceName");
 
@@ -159,7 +159,7 @@ class seedGeoOtherFile extends Command
             $this->info("Truncating '{$tableName}' table...");
             DB::table($tableName)->truncate();
 
-            $fileName = storage_path("geo/{$sourceName}.txt");
+            $fileName = removeCommentLines($sourceName);
             $this->info("Reading File '$fileName'");
 
             $sql = $this->otherFileSqls($tableName);
@@ -180,6 +180,31 @@ class seedGeoOtherFile extends Command
         $this->info("Timing: $time_elapsed_secs sec</info>");
     }
 
+    public function removeCommentLines($sourceName)
+    {
+        $inputFile = storage_path("geo/{$sourceName}.txt");
+        $outputFile = storage_path("geo/{$sourceName}_remove_comment.txt");
+
+        $escapedInputFile = escapeshellarg($inputFile);
+        $escapedOutputFile = escapeshellarg($outputFile);
+
+        // Execute the sed command
+        $command = "sed -e '/^#/d' -e '/^\\s*$/d' $escapedInputFile > $escapedOutputFile";
+
+        // Run the command and capture the output and status
+        $output = shell_exec($command . ' 2>&1'); // Capture error output
+        $status = null; // Initialize status
+
+        // Check if the command executed successfully
+        if ($output === null) {
+            $this->info("Command executed successfully.");
+        } else {
+            $this->info('Error executing command: ' . $output);
+        }
+
+        return $outputFile;
+    }
+
     public function otherFileSqls($tableName)
     {
         switch ($tableName) {
@@ -197,7 +222,6 @@ EOT;
     INTO TABLE %s
 FIELDS TERMINATED BY '\t'
 LINES TERMINATED BY '\n'
-LINES STARTING BY '#' IGNORE 1 LINES;
 (country,
 @dummy,
 @dummy,
