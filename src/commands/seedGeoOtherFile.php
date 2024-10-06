@@ -162,7 +162,7 @@ class seedGeoOtherFile extends Command
             $fileName = $this->removeCommentLines($sourceName);
             $this->info("Reading File '$fileName'");
 
-            $sql = $this->otherFileSqls($tableName);
+            $sql = $this->otherFileSqls($tableName, $fileName);
             DB::statement($sql, [$fileName]);
         }
 
@@ -205,20 +205,20 @@ class seedGeoOtherFile extends Command
         return $outputFile;
     }
 
-    public function otherFileSqls($tableName)
-    {
-        switch ($tableName) {
-            case 'geo_alternate_names':
-                return <<<EOT
-        LOAD DATA INFILE ?
+    public function otherFileSqls($tableName, $fileName)
+{
+    switch ($tableName) {
+        case 'geo_alternate_names':
+            return <<<EOT
+        LOAD DATA INFILE '{$fileName}'
     INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
 LINES TERMINATED BY '\\n';
 EOT;
-                break;
-            case 'geo_country_infos':
-                return <<<EOT
-        LOAD DATA INFILE ?
+            break;
+        case 'geo_country_infos':
+            return <<<EOT
+        LOAD DATA INFILE '{$fileName}'
     INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
 LINES TERMINATED BY '\\n'
@@ -241,11 +241,11 @@ languages,
 geo_id
 );
 EOT;
-                break;
-            default:
-                return;
-        }
+            break;
+        default:
+            return;
     }
+}
 
     public function writeToDb($tableName, $sourceName)
     {
