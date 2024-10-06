@@ -163,7 +163,7 @@ class seedGeoOtherFile extends Command
             $this->info("Reading File '$fileName'");
 
             $sql = $this->otherFileSqls($tableName);
-            DB::statement(sprintf($sql, $tableName), [$fileName]);
+            DB::statement($sql, [$fileName]);
         }
 
         //Lets get back MySQL FOREIGN_KEY_CHECKS to laravel
@@ -211,7 +211,7 @@ class seedGeoOtherFile extends Command
             case 'geo_alternate_names':
                 return <<<EOT
         LOAD DATA INFILE ?
-    INTO TABLE %s
+    INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
 LINES TERMINATED BY '\\n';
 EOT;
@@ -219,7 +219,7 @@ EOT;
             case 'geo_country_infos':
                 return <<<EOT
         LOAD DATA INFILE ?
-    INTO TABLE %s
+    INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
 LINES TERMINATED BY '\\n'
 (country,
