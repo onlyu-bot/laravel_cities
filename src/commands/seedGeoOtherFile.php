@@ -159,7 +159,7 @@ class seedGeoOtherFile extends Command
             $this->info("Truncating '{$tableName}' table...");
             DB::table($tableName)->truncate();
 
-            $fileName = removeCommentLines($sourceName);
+            $fileName = $this->removeCommentLines($sourceName);
             $this->info("Reading File '$fileName'");
 
             $sql = $this->otherFileSqls($tableName);
