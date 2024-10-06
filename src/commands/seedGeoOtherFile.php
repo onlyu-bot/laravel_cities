@@ -156,11 +156,14 @@ class seedGeoOtherFile extends Command
             $this->info("Start seeding for $sourceName");
 
             // Clear Table
-            $this->info("Truncating '{$this->getFullyQualifiedTableName($tableName)}' table...");
+            $this->info("Truncating '{$tableName}' table...");
             DB::table($tableName)->truncate();
 
-            // write to persistent storage
-            $this->writeToDb($tableName, $sourceName);
+            $fileName = storage_path("geo/{$sourceName}.txt");
+            $this->info("Reading File '$fileName'");
+
+            $sql = $this->otherFileSqls($tableName);
+            DB::statement(sprintf($sql, $tableName), [$fileName]);
         }
 
         //Lets get back MySQL FOREIGN_KEY_CHECKS to laravel
@@ -177,36 +180,47 @@ class seedGeoOtherFile extends Command
         $this->info("Timing: $time_elapsed_secs sec</info>");
     }
 
-    public function otherFileParams($tableName, array $line)
+    public function otherFileSqls($tableName)
     {
-
-        $params = [];
         switch ($tableName) {
             case 'geo_alternate_names':
-                $params = [
-                    ':alternate_name_id' => $line[0],
-                    ':geo_id' => $line[1],
-                    ':isolanguage' => $line[2],
-                    ':alternate_name' => $line[3],
-                    ':is_preferred_name' => $line[4],
-                    ':is_short_name' => $line[5],
-                    ':is_colloquial' => $line[6],
-                    ':is_historic' => $line[7],
-                ];
+                return <<<EOT
+        LOAD DATA INFILE ?
+    INTO TABLE %s
+FIELDS TERMINATED BY '\t'
+LINES TERMINATED BY '\n';
+EOT;
                 break;
             case 'geo_country_infos':
-                $params = [
-                    ':country' => $line[0],
-                    ':currency_code' => $line[10],
-                    ':languages' => $line[15],
-                    ':geo_id' => $line[16],
-                ];
+                return <<<EOT
+        LOAD DATA INFILE ?
+    INTO TABLE %s
+FIELDS TERMINATED BY '\t'
+LINES TERMINATED BY '\n'
+LINES STARTING BY '#' IGNORE 1 LINES;
+(country,
+@dummy,
+@dummy,
+@dummy,
+@dummy,
+@dummy,
+@dummy,
+@dummy,
+@dummy,
+@dummy,
+currency_code,
+@dummy,
+@dummy,
+@dummy,
+@dummy,
+languages,
+geo_id
+);
+EOT;
                 break;
             default:
-                break;
+                return;
         }
-
-        return $params;
     }
 
     public function writeToDb($tableName, $sourceName)
@@ -223,35 +237,7 @@ class seedGeoOtherFile extends Command
         $fileName = storage_path("geo/{$sourceName}.txt");
         $this->info("Reading File '$fileName'");
 
-        $filesize = filesize($fileName);
-        $totalCount = intval(exec("wc -l '{$fileName}'"));
-        $handle = fopen($fileName, 'r');
-
-        while (($line = fgets($handle)) !== false) {
-            // ignore empty lines and comments
-            if (! $line || $line === '' || strpos($line, '#') === 0) {
-                $totalCount--;
-                continue;
-            }
-
-            $progress = $count++ / $totalCount * 100;
-            $progressBar->setProgress($progress);
-            // Check for errors
-            //dd($line[0], $line[2]);
-
-            // Convert TAB sepereted line to array
-            $line = explode("\t", $line);
-
-            $params = $this->otherFileParams($tableName, $line);
-
-            if ($stmt->execute($params) === false) {
-                $error = "Error in SQL : '$sql'\n" . PDO::errorInfo() . "\nParams: \n$params";
-                throw new Exception($error, 1);
-            }
-
-            $progress = ftell($handle) / $filesize * 100;
-            $progressBar->setProgress($progress);
-        }
+        $sql = $this->otherFileSqls($tableName, $fileName);
 
         $progressBar->finish();
     }
