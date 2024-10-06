@@ -212,16 +212,16 @@ class seedGeoOtherFile extends Command
                 return <<<EOT
         LOAD DATA INFILE ?
     INTO TABLE %s
-FIELDS TERMINATED BY '\t'
-LINES TERMINATED BY '\n';
+FIELDS TERMINATED BY '\\t'
+LINES TERMINATED BY '\\n';
 EOT;
                 break;
             case 'geo_country_infos':
                 return <<<EOT
         LOAD DATA INFILE ?
     INTO TABLE %s
-FIELDS TERMINATED BY '\t'
-LINES TERMINATED BY '\n'
+FIELDS TERMINATED BY '\\t'
+LINES TERMINATED BY '\\n'
 (country,
 @dummy,
 @dummy,
