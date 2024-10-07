@@ -136,7 +136,7 @@ class seedGeoOtherFile extends Command
             'geo_country_infos' => 'countryInfo'
         ];
 
-        $this->pdo = DB::connection()->getPdo(PDO::FETCH_ASSOC);
+        $this->pdo = DB::connection()->getPdo();
 
         foreach ($otherFiles as $tableName => $sourceName) {
             if (! Schema::hasTable($tableName)) {
