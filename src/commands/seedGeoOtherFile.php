@@ -149,31 +149,37 @@ class seedGeoOtherFile extends Command
 
         DB::beginTransaction();
 
-        foreach ($otherFiles as $tableName => $sourceName) {
+        try {
+            foreach ($otherFiles as $tableName => $sourceName) {
+                $this->info("Start seeding for $sourceName");
 
-            //$this->chunkSize = $this->option('chunk');
+                // Clear Table
+                $this->info("Truncating '{$tableName}' table...");
+                DB::table($tableName)->truncate();
 
-            $this->info("Start seeding for $sourceName");
+                $fileName = $this->removeCommentLines($sourceName);
+                $this->info("Reading File '$fileName'");
 
-            // Clear Table
-            $this->info("Truncating '{$tableName}' table...");
-            DB::table($tableName)->truncate();
+                $sql = $this->otherFileSqls($tableName, $fileName);
+                DB::statement($sql);
+            }
 
-            $fileName = $this->removeCommentLines($sourceName);
-            $this->info("Reading File '$fileName'");
+            // Enable MySQL FOREIGN_KEY_CHECKS
+            if (DB::connection()->getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
 
-            $sql = $this->otherFileSqls($tableName, $fileName);
-            DB::statement($sql);
+            $this->info(PHP_EOL . 'Relation checks enabled');
+
+            // Commit the transaction
+            DB::commit();
+        } catch (\Exception $e) {
+            // Rollback the transaction if something goes wrong
+            DB::rollBack();
+
+            // Log the error message or handle it as needed
+            $this->error("Error occurred: " . $e->getMessage());
         }
-
-        //Lets get back MySQL FOREIGN_KEY_CHECKS to laravel
-        if (DB::connection()->getDriverName() === 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        }
-
-        $this->info(PHP_EOL . ' Relation checks enabled');
-
-        DB::commit();
 
         $this->info(' Done</info>');
         $time_elapsed_secs = microtime(true) - $start;
@@ -181,18 +187,18 @@ class seedGeoOtherFile extends Command
     }
 
     public function otherFileSqls($tableName, $fileName)
-{
-    switch ($tableName) {
-        case 'geo_alternate_names':
-            return <<<EOT
+    {
+        switch ($tableName) {
+            case 'geo_alternate_names':
+                return <<<EOT
         LOAD DATA LOCAL INFILE '{$fileName}'
     INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
 LINES TERMINATED BY '\\n';
 EOT;
-            break;
-        case 'geo_country_infos':
-            return <<<EOT
+                break;
+            case 'geo_country_infos':
+                return <<<EOT
         LOAD DATA LOCAL INFILE '{$fileName}'
     INTO TABLE {$tableName}
 FIELDS TERMINATED BY '\\t'
@@ -216,13 +222,13 @@ languages,
 geo_id
 );
 EOT;
-            break;
-        default:
-            return;
+                break;
+            default:
+                return;
+        }
     }
-}
 
-public function removeCommentLines($sourceName)
+    public function removeCommentLines($sourceName)
     {
         $inputFile = storage_path("geo/{$sourceName}.txt");
         $outputFile = storage_path("geo/{$sourceName}_remove_comment.txt");
@@ -231,7 +237,7 @@ public function removeCommentLines($sourceName)
         $escapedOutputFile = escapeshellarg($outputFile);
 
         // Execute the sed command
-        $command = "sed -e '/^#/d' -e '/^\\s*$/d' $escapedInputFile > $escapedOutputFile";
+        $command = "rm -f $escapedOutputFile ;sed -e '/^#/d' -e '/^\\s*$/d' $escapedInputFile > $escapedOutputFile";
 
         // Run the command and capture the output and status
         $output = shell_exec($command . ' 2>&1'); // Capture error output
